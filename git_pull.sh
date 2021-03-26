@@ -52,7 +52,7 @@ function Update_Cron() {
 
 ## 更新Shell源码
 function Git_PullShell() {
-  echo -e "\n更新 JD-FreeFuck 项目脚本：\n"
+  echo -e "\n更新 base 项目脚本：\n"
   cd ${ShellDir}
   git fetch --all
   ExitStatusShell=$?
