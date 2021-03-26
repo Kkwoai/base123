@@ -39,56 +39,61 @@ function Detect_Cron() {
 }
 
 ## 用户数量UserSum
-function Count_UserSum() {
-  for ((i = 1; i <= 30; i++)); do
+function Count_UserSum {
+  i=1
+  while [ $i -le 1000 ]; do
     Tmp=Cookie$i
     CookieTmp=${!Tmp}
     [[ ${CookieTmp} ]] && UserSum=$i || break
-  done
-
-  for ((d = 31; d <= 1000; d++)); do
-    Del=Cookie$d
-    sed -i "/${!Del}/d" ${FileConf} || break
+    let i++
   done
 }
 
 ## 组合Cookie和互助码子程序
-function Combin_Sub() {
+function Combin_Sub {
   CombinAll=""
-  if [[ ${AutoHelpOther} == true ]] && [[ $1 == ForOther* ]]; then
-
-    ForOtherAll=""
-    MyName=$(echo $1 | perl -pe "s|ForOther|My|")
-
-    for ((m = 1; m <= ${UserSum}; m++)); do
-      TmpA=${MyName}$m
-      TmpB=${!TmpA}
-      ForOtherAll="${ForOtherAll}@${TmpB}"
-    done
-
-    for ((n = 1; n <= ${UserSum}; n++)); do
-      for num in ${TempBlockCookie}; do
-        [[ $n -eq $num ]] && continue 2
-      done
-      CombinAll="${CombinAll}&${ForOtherAll}"
-    done
-
-  else
-    for ((i = 1; i <= ${UserSum}; i++)); do
-      for num in ${TempBlockCookie}; do
-        [[ $i -eq $num ]] && continue 2
-      done
-      Tmp1=$1$i
-      Tmp2=${!Tmp1}
-      CombinAll="${CombinAll}&${Tmp2}"
-    done
-  fi
-
-  echo ${CombinAll} | perl -pe "{s|^&||; s|^@+||; s|&@|&|g; s|@+&|&|g; s|@+|@|g; s|@+$||}"
+  i=1
+  while [ $i -le ${UserSum} ]
+  do
+    Tmp1=$1$i
+    Tmp2=${!Tmp1}
+    case $# in
+      1)
+        CombinAll="${CombinAll}&${Tmp2}"
+        ;;
+      2)
+        CombinAll="${CombinAll}&${Tmp2}@$2"
+        ;;
+      3)
+        if [ $(($i % 2)) -eq 1 ]; then
+          CombinAll="${CombinAll}&${Tmp2}@$2"
+        else
+          CombinAll="${CombinAll}&${Tmp2}@$3"
+        fi
+        ;;
+      4)
+        case $(($i % 3)) in
+          1)
+            CombinAll="${CombinAll}&${Tmp2}@$2"
+            ;;
+          2)
+            CombinAll="${CombinAll}&${Tmp2}@$3"
+            ;;
+          0)
+            CombinAll="${CombinAll}&${Tmp2}@$4"
+            ;;
+        esac
+        ;;
+    esac
+    let i++
+  done
+  echo ${CombinAll} | perl -pe "{s|^&||; s|^@+||; s|&@|&|g; s|@+|@|g}"
 }
-## 组合Cookie、Token与互助码
-function Combin_All() {
+
+## 组合Cookie、Token与互助码，用户自己的放在前面，我的放在后面
+function Combin_All {
   export JD_COOKIE=$(Combin_Sub Cookie)
+  export JXNCTOKENS=$(Combin_Sub TokenJxnc)
   #东东农场(jd_fruit.js)
   export FRUITSHARECODES=$(Combin_Sub ForOtherFruit "e2d8c5cc012d4d9aa89ec3c38d9c32dc@1c7be7a24e5649e9a671d445a4eea876@d4b229884eef4e19b912404c4458cac8@fa24bc6934de42dda27eb2a6524f13c0@55997ff9382d4d68a96226bac50e1543@415f1b2c77ab49349cc0745b2817bdef@9dc01d97749f49aeaeee0a00c8486989@cd2a466b397b4ac59aa993b34b401afd")
   #东东萌宠(jd_pet.js)
@@ -103,19 +108,18 @@ function Combin_All() {
   export JDZZ_SHARECODES=$(Combin_Sub ForOtherJdzz "SvfV2RxwE8V3UJRP1lvc@S5KkcHFpxsRCXRWa90qpJ@Sa3r3lqWgIMJ59Yxa@S5KkcNmptqiGeXH-S8JFU@S5KkcRxYZpFbXI0uhkfNecA")
   #crazyJoy(jd_crazy_joy.js)
   export JDJOY_SHARECODES=$(Combin_Sub ForOtherJoy "B8TaKS2BaXKhwuuui2kc5A==@yar0ag5yv0wnzGNBHuD-og==@bv9H42Fku0AomKC2CtKsnw==@u_XLp4AY3oQTMrpZvwP5Uw==@")
+  #惊喜农场(jd_jxnc.js)
+  export JXNC_SHARECODES=$(Combin_Sub ForOtherJxnc)
   #口袋书店(jd_bookshop.js)
   export BOOKSHOP_SHARECODES=$(Combin_Sub ForOtherBookShop "ea51cb0a7749483c92e42fee04461153@dbb6bc5d12784b219d8efb49182ddcb5@79c70caa932340cd813603e87fed7c63@7d433aae765a4beab257de3970985b1f" )
   #签到领现金(jd_cash.js)
   export JD_CASH_SHARECODES=$(Combin_Sub ForOtherCash "IBMya-6vYvUl9GfUyXM@eU9YMKjaIrhmlBKcjS5Q@9pyzulcLs2qIJPh7@eU9YGpjGOYlvjQuzrxVN@eU9Ya-SyN_4m8j-AzndH0g")
   #闪购盲盒(jd_sgmh.js)
   export JDSGMH_SHARECODES=$(Combin_Sub ForOtherSgmh "T019vfV2RxwE8V3UJRP1lvcCjVWmIaW5kRrbA@T0205KkcHFpxsRCXRWa90qpJCjVWmIaW5kRrbA@T016a3r3lqWgIMJ59YxaCjVWmIaW5kRrbA@T0205KkcNmptqiGeXH-S8JFUCjVWmIaW5kRrbA@T0225KkcRxYZpFbXI0uhkfNecACjVWmIaW5kRrbA" )
-  ## 京喜农场(jd_jxnc.js)
-  export JXNC_SHARECODES=$(Combin_Sub ForOtherJxnc)
-  ## 京喜财富岛(jd_cfd.js)
-  export JDCFD_SHARECODES=$(Combin_Sub ForOtherCfd)
-  ## 环球挑战赛(jd_global.js)
-  export JDGLOBAL_SHARECODES=$(Combin_Sub ForOtherGlobal)
+  #环球挑战赛(jd_global.js)-活动时间：2021-02-02 至 2021-02-22
+  export JDGLOBAL_SHARECODES=$(Combin_Sub ForOtherGLOBAL )
 }
+
 
 ## 转换JD_BEAN_SIGN_STOP_NOTIFY或JD_BEAN_SIGN_NOTIFY_SIMPLE
 function Trans_JD_BEAN_SIGN_NOTIFY() {
