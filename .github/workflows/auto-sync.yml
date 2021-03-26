@@ -1,0 +1,22 @@
+name: "JD Docker Image Buildx Stable Github"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build JD Docker Image Stable Github
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@master
+      - name: Build and publish image
+        uses: ilteoood/docker_buildx@master
+        with:
+          publish: true
+          imageName: kabasijiniu/myjd2
+          dockerFile: docker/Dockerfile
+          platform: linux/amd64
+          tag: latest
+          dockerUser: ${{ secrets.DOCKER_USERNAME }}
+          dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
