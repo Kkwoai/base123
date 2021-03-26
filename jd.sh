@@ -53,40 +53,45 @@ function Count_UserSum() {
 }
 
 ## 组合Cookie和互助码子程序
-function Combin_Sub() {
+function Combin_Sub {
   CombinAll=""
-  if [[ ${AutoHelpOther} == true ]] && [[ $1 == ForOther* ]]; then
-
-    ForOtherAll=""
-    MyName=$(echo $1 | perl -pe "s|ForOther|My|")
-
-    for ((m = 1; m <= ${UserSum}; m++)); do
-      TmpA=${MyName}$m
-      TmpB=${!TmpA}
-      ForOtherAll="${ForOtherAll}@${TmpB}"
-    done
-
-    for ((n = 1; n <= ${UserSum}; n++)); do
-      for num in ${TempBlockCookie}; do
-        [[ $n -eq $num ]] && continue 2
-      done
-      CombinAll="${CombinAll}&${ForOtherAll}"
-    done
-
-  else
-    for ((i = 1; i <= ${UserSum}; i++)); do
-      for num in ${TempBlockCookie}; do
-        [[ $i -eq $num ]] && continue 2
-      done
-      Tmp1=$1$i
-      Tmp2=${!Tmp1}
-      CombinAll="${CombinAll}&${Tmp2}"
-    done
-  fi
-
-  echo ${CombinAll} | perl -pe "{s|^&||; s|^@+||; s|&@|&|g; s|@+&|&|g; s|@+|@|g; s|@+$||}"
+  i=1
+  while [ $i -le ${UserSum} ]
+  do
+    Tmp1=$1$i
+    Tmp2=${!Tmp1}
+    case $# in
+      1)
+        CombinAll="${CombinAll}&${Tmp2}"
+        ;;
+      2)
+        CombinAll="${CombinAll}&${Tmp2}@$2"
+        ;;
+      3)
+        if [ $(($i % 2)) -eq 1 ]; then
+          CombinAll="${CombinAll}&${Tmp2}@$2"
+        else
+          CombinAll="${CombinAll}&${Tmp2}@$3"
+        fi
+        ;;
+      4)
+        case $(($i % 3)) in
+          1)
+            CombinAll="${CombinAll}&${Tmp2}@$2"
+            ;;
+          2)
+            CombinAll="${CombinAll}&${Tmp2}@$3"
+            ;;
+          0)
+            CombinAll="${CombinAll}&${Tmp2}@$4"
+            ;;
+        esac
+        ;;
+    esac
+    let i++
+  done
+  echo ${CombinAll} | perl -pe "{s|^&||; s|^@+||; s|&@|&|g; s|@+|@|g}"
 }
-
 ## 组合Cookie、Token与互助码
 function Combin_All() {
   export JD_COOKIE=$(Combin_Sub Cookie)
