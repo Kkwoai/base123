@@ -2,7 +2,7 @@ FROM node:lts-alpine
 
 LABEL maintainer="SuperManito"
 
-ARG JD_BASE_URL="https://github.com/Kkwoai/base123.git"
+ARG JD_BASE_URL=https://github.com/Kkwoai/base123.git
 
 ARG JD_BASE_BRANCH=master
 
