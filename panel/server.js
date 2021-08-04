@@ -117,12 +117,12 @@ async function step2() {
         let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthreflogurl?lang=chs&appid=300&s_token=' + s_token + '&remember=true'
         const response = await got.post(url, {
             responseType: 'json',
-            json: {
-                'lang': 'chs',
-                'appid': 300,
-                'returnurl': 'https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
-                'source': 'wq_passport'
-            },
+            // json: {
+            //     'lang': 'chs',
+            //     'appid': 300,
+            //     'returnurl': 'https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
+            //     'source': 'wq_passport'
+            // },
             headers: {
                 'Connection': 'Keep-Alive',
                 'Content-Type': 'application/x-www-form-urlencoded; Charset=UTF-8',
@@ -152,15 +152,15 @@ async function checkLogin() {
             return 0
         }
         let timeStamp = (new Date()).getTime()
-        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthchecktoken?&token=' + token + '&ou_state=0&okl_token=' + okl_token;
+        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthchecktoken?lang=chs&appid=300&returnurl=&token=' + token + '&ou_state=0&okl_token=' + okl_token;
         const response = await got.post(url, {
             responseType: 'json',
-            form: {
-                lang: 'chs',
-                appid: 300,
-                returnurl: 'https://wqlogin2.jd.com/passport/LoginRedirect?state=1100399130787&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
-                source: 'wq_passport'
-            },
+            // form: {
+            //     lang: 'chs',
+            //     appid: 300,
+            //     returnurl: 'https://wqlogin2.jd.com/passport/LoginRedirect?state=1100399130787&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
+            //     source: 'wq_passport'
+            // },
             headers: {
                 'Referer': 'https://plogin.m.jd.com/login/login?appid=300',
                 'Cookie': cookies,
