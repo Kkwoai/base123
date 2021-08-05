@@ -78,15 +78,9 @@ function getCookie(response) {
 
 async function step1() {
     try {
-        s_token,
-        cookies,
-        guid,
-        lsid,
-        lstoken,
-        okl_token,
-        token = ""
+        s_token, cookies, guid, lsid, lstoken, okl_token, token = ""
         let timeStamp = (new Date()).getTime()
-        let url = 'https://plogin.m.jd.com/cgi-bin/mm/new_login_entrance?lang=chs&appid=300'
+        let url = 'https://plogin.m.jd.com/cgi-bin/mm/new_login_entrance?lang=chs&appid=300&returnurl=https://wq.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport'
         const response = await got(url, {
             responseType: 'json',
             headers: {
@@ -94,15 +88,14 @@ async function step1() {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-cn',
-                'Referer': 'https://plogin.m.jd.com/login/login?appid=300',
-                'User-Agent': 'Mozilla/5.0 (Linux;Android 10;GM1910) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36',
+                'Referer': 'https://plogin.m.jd.com/login/login?appid=300&returnurl=https://wq.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 SP-engine/2.14.0 main%2F1.0 baiduboxapp/11.18.0.16 (Baidu; P2 13.3.1) NABar/0.0',
                 'Host': 'plogin.m.jd.com'
             }
         });
 
         praseSetCookies(response)
-    }
-    catch (error) {
+    } catch (error) {
         cookies = "";
         console.log(error.response.body);
     }
@@ -114,22 +107,22 @@ async function step2() {
             return 0
         }
         let timeStamp = (new Date()).getTime()
-        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthreflogurl?lang=chs&appid=300&s_token=' + s_token + '&remember=true'
+        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthreflogurl?s_token=' + s_token + '&v=' + timeStamp + '&remember=true'
         const response = await got.post(url, {
             responseType: 'json',
-            // json: {
-            //     'lang': 'chs',
-            //     'appid': 300,
-            //     'returnurl': 'https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
-            //     'source': 'wq_passport'
-            // },
+            json: {
+                'lang': 'chs',
+                'appid': 300,
+                'returnurl': 'https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
+                'source': 'wq_passport'
+            },
             headers: {
                 'Connection': 'Keep-Alive',
                 'Content-Type': 'application/x-www-form-urlencoded; Charset=UTF-8',
                 'Accept': 'application/json, text/plain, */*',
                 'Cookie': cookies,
-                'Referer': 'https://plogin.m.jd.com/login/login?appid=300',
-                'User-Agent': 'Mozilla/5.0 (Linux;Android 10;GM1910) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36',
+                'Referer': 'https://plogin.m.jd.com/login/login?appid=300&returnurl=https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 SP-engine/2.14.0 main%2F1.0 baiduboxapp/11.18.0.16 (Baidu; P2 13.3.1) NABar/0.0',
                 'Host': 'plogin.m.jd.com',
             }
         });
@@ -152,23 +145,22 @@ async function checkLogin() {
             return 0
         }
         let timeStamp = (new Date()).getTime()
-        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthchecktoken?lang=chs&appid=300&returnurl=&token=' + token + '&ou_state=0&okl_token=' + okl_token;
+        let url = 'https://plogin.m.jd.com/cgi-bin/m/tmauthchecktoken?&token=' + token + '&ou_state=0&okl_token=' + okl_token;
         const response = await got.post(url, {
             responseType: 'json',
-            // form: {
-            //     lang: 'chs',
-            //     appid: 300,
-            //     returnurl: 'https://wqlogin2.jd.com/passport/LoginRedirect?state=1100399130787&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
-            //     source: 'wq_passport'
-            // },
+            form: {
+                lang: 'chs',
+                appid: 300,
+                returnurl: 'https://wqlogin2.jd.com/passport/LoginRedirect?state=1100399130787&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action',
+                source: 'wq_passport'
+            },
             headers: {
-                'Referer': 'https://plogin.m.jd.com/login/login?appid=300',
+                'Referer': 'https://plogin.m.jd.com/login/login?appid=300&returnurl=https://wqlogin2.jd.com/passport/LoginRedirect?state=' + timeStamp + '&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport',
                 'Cookie': cookies,
                 'Connection': 'Keep-Alive',
                 'Content-Type': 'application/x-www-form-urlencoded; Charset=UTF-8',
                 'Accept': 'application/json, text/plain, */*',
-                'User-Agent': 'Mozilla/5.0 (Linux;Android 10;GM1910) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36',
-                
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 SP-engine/2.14.0 main%2F1.0 baiduboxapp/11.18.0.16 (Baidu; P2 13.3.1) NABar/0.0',
             }
         });
 
@@ -176,16 +168,11 @@ async function checkLogin() {
     } catch (error) {
         console.log(error.response.body);
         let res = {}
-        res.body = {
-            check_ip: 0,
-            errcode: 222,
-            message: '出错'
-        }
+        res.body = { check_ip: 0, errcode: 222, message: '出错' }
         res.headers = {}
         return res;
     }
 }
-
 
 
 /**
